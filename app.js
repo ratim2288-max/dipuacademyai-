@@ -497,7 +497,10 @@
     const saved = localStorage.getItem(STORAGE_KEYS.SESSIONS);
     if (saved) {
       try {
-        state.sessions = JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        state.sessions = Array.isArray(parsed)
+          ? parsed.filter(s => s && Array.isArray(s.messages) && s.messages.length > 0)
+          : [];
       } catch (e) {
         state.sessions = [];
       }
@@ -657,7 +660,9 @@
 
   function saveSessions() {
     if (state.settings.saveHistory) {
-      localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(state.sessions));
+      // চ্যাটে টেক্সট বা মেসেজ না থাকলে হিস্ট্রি বা স্টোরেজে সেভ হবে না
+      const sessionsWithText = state.sessions.filter(s => s && Array.isArray(s.messages) && s.messages.length > 0);
+      localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(sessionsWithText));
       localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION_ID, state.currentSessionId);
     }
   }
@@ -931,9 +936,23 @@
 
     const q = searchQuery.toLowerCase().trim();
     const filteredSessions = state.sessions.filter(sess => {
+      // চ্যাটে কোনো টেক্সট বা মেসেজ না থাকলে হিস্ট্রিতে যোগ হবে না
+      if (!sess || !Array.isArray(sess.messages) || sess.messages.length === 0) {
+        return false;
+      }
       if (!q) return true;
       return sess.title.toLowerCase().includes(q) || (sess.subject && sess.subject.toLowerCase().includes(q));
     });
+
+    if (filteredSessions.length === 0) {
+      drawerHistoryScroll.innerHTML = `
+        <div style="text-align:center; padding: 40px 16px; color:#94a3b8; font-size:13px;">
+          <div style="font-size:24px; margin-bottom:8px;">💬</div>
+          <div>কোনো পূর্ববর্তী চ্যাট ইতিহাস নেই</div>
+        </div>
+      `;
+      return;
+    }
 
     const groups = ['TODAY', 'YESTERDAY', 'THIS WEEK'];
 
@@ -996,6 +1015,22 @@
 
   // Start a New Chat (Completely clean, no previous text)
   function handleStartNewChat() {
+    const current = getCurrentSession();
+    // If current session has no messages yet, simply focus it without creating duplicates
+    if (current && Array.isArray(current.messages) && current.messages.length === 0) {
+      chatInput.value = '';
+      clearAttachment();
+      renderChatUI();
+      renderDrawerHistory();
+      closeDrawer();
+      switchView('chat');
+      chatInput.focus();
+      return;
+    }
+
+    // Clean up any other empty sessions that had no messages
+    state.sessions = state.sessions.filter(s => s && Array.isArray(s.messages) && s.messages.length > 0);
+
     const newSession = {
       id: 'session-' + Date.now(),
       title: 'New chat',
@@ -1003,7 +1038,7 @@
       subject: 'Study',
       timeTag: 'Just now',
       timestamp: Date.now(),
-      messages: [] // Completely clean!
+      messages: [] // Completely clean draft (won't appear in history until text is sent)
     };
 
     state.sessions.unshift(newSession);
