@@ -1,0 +1,13 @@
+{
+  "name": "dipuacademyai",
+  "version": "1.0.0",
+  "description": "Smart Chat AI - Modern Glassmorphic AI Assistant for Dipu Academy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["ai", "gemini", "smart-chat", "glassmorphism"],
+  "author": "Dipu Academy",
+  "license": "MIT"
+}

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dipu Academy AI — Your Personal Study Companion</title>
+  <meta name="description" content="AI powered smart study companion for Dipu Academy students.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="desktop-centered" data-theme="light">
+  <!-- Desktop Frame Mode Switcher -->
+  <div class="view-controls" id="viewControls">
+    <button class="view-toggle-btn active" id="btnPhoneView" title="Mobile Mockup View">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+      <span>Phone View</span>
+    </button>
+    <button class="view-toggle-btn" id="btnFullView" title="Full Screen View">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+      <span>Full Screen</span>
+    </button>
+  </div>
+
+  <!-- Background Ambient Glow -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Mobile Frame -->
+  <div class="device-frame" id="deviceFrame">
+    <div class="device-speaker"></div>
+
+    <div class="screen-wrapper">
+      <!-- iOS Status Bar -->
+      <header class="status-bar" id="statusBar">
+        <div class="status-time" id="statusClock">9:41</div>
+        <div class="status-icons">
+          <!-- Signal -->
+          <svg width="16" height="12" viewBox="0 0 17 12" fill="currentColor">
+            <rect x="0" y="8" width="3" height="4" rx="1"/>
+            <rect x="4.5" y="6" width="3" height="6" rx="1"/>
+            <rect x="9" y="3" width="3" height="9" rx="1"/>
+            <rect x="13.5" y="0" width="3" height="12" rx="1"/>
+          </svg>
+          <!-- Wifi -->
+          <svg width="15" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+          </svg>
+          <!-- Battery -->
+          <div class="battery-icon">
+            <div class="battery-fill"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ===================================================================
+           VIEW 1: MAIN CHAT VIEW (Exact Image 1)
+           =================================================================== -->
+      <div class="app-view active" id="viewChat">
+        <!-- App Top Header -->
+        <nav class="app-nav">
+          <button class="nav-icon-btn" id="btnOpenSidebar" aria-label="Open Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="17" x2="20" y2="17"></line>
+            </svg>
+          </button>
+          
+          <div class="nav-center-brand">
+            <h1 class="brand-title">Dipu Academy AI</h1>
+            <div class="brand-subline">
+              <span class="live-dot"></span>
+              <span>Your personal study companion</span>
+            </div>
+          </div>
+
+          <button class="nav-icon-btn" id="btnHeaderNewChat" aria-label="New Chat">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+        </nav>
+
+        <!-- Sub-header Journey Banner -->
+        <div class="journey-banner-wrapper" id="journeyBannerWrapper">
+          <div class="journey-banner-card" id="btnBannerProfile">
+            <div class="journey-left">
+              <div class="journey-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+              </div>
+              <div class="journey-info">
+                <div class="journey-title" id="bannerJourneyTitle">Made for your SSC journey</div>
+                <div class="journey-subtitle" id="bannerJourneySub">Class 10 • Science & Mathematics</div>
+              </div>
+            </div>
+            <div class="journey-actions">
+              <button class="journey-filter-btn" id="btnBannerFilter" aria-label="Edit Profile">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="21" x2="4" y2="14"></line>
+                  <line x1="4" y1="10" x2="4" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12" y2="3"></line>
+                  <line x1="20" y1="21" x2="20" y2="16"></line>
+                  <line x1="20" y1="12" x2="20" y2="3"></line>
+                  <line x1="1" y1="14" x2="7" y2="14"></line>
+                  <line x1="9" y1="8" x2="15" y2="8"></line>
+                  <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+              </button>
+              <button class="journey-dismiss-btn" id="btnDismissBanner" aria-label="Dismiss Banner">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Messages Area -->
+        <main class="chat-area" id="chatArea">
+          <!-- Dynamically populated messages -->
+        </main>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator-bar" id="typingIndicator" style="display: none;">
+          <div class="ai-sparkle-avatar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+            </svg>
+          </div>
+          <span class="typing-text">Dipu AI উত্তর লিখছে...</span>
+          <div class="typing-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <!-- Bottom Input Bar Container -->
+        <footer class="input-container-wrapper">
+          <!-- Antigravity-Style Queued Messages Container -->
+          <div class="queued-messages-container" id="queuedMessagesContainer" style="display: none;">
+            <div class="queued-messages-header" id="queuedHeader">
+              <div class="queued-header-left">
+                <span class="queued-badge-title">Queued Messages</span>
+                <span class="queued-count-pill" id="queuedCountPill">0</span>
+                <span class="queued-subtitle">Sends after agent finishes...</span>
+              </div>
+              <button type="button" class="btn-toggle-queue" id="btnToggleQueue" title="Toggle Queue" aria-label="Toggle Queue">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="queued-items-list" id="queuedItemsList">
+              <!-- Dynamically populated queued items -->
+            </div>
+          </div>
+
+          <form class="glass-input-card" id="chatForm">
+            <!-- Attachment Preview Box inside chat input -->
+            <div class="chat-attachment-preview" id="chatAttachmentPreview" style="display: none;">
+              <div class="attachment-preview-thumb-wrap">
+                <img id="attachmentPreviewImg" src="" alt="Attached preview">
+                <button type="button" class="btn-remove-preview" id="btnRemovePreview" title="Remove attachment">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div class="attachment-preview-meta">
+                <span class="attachment-preview-name" id="attachmentPreviewName">photo.jpg</span>
+                <span class="attachment-preview-tag">ছবি সংযুক্ত হয়েছে</span>
+              </div>
+            </div>
+
+            <input 
+              type="text" 
+              id="chatInput" 
+              class="chat-input-field" 
+              placeholder="তোমার প্রশ্ন লেখো... / Ask anything" 
+              autocomplete="off"
+              spellcheck="false"
+            >
+
+            <div class="input-actions-row">
+              <div class="left-action-group" style="position: relative;">
+                <button type="button" class="btn-attach" id="btnAttachFile" title="Attach image or photo" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                  </svg>
+                </button>
+
+                <!-- Attachment Action Popup Menu (Camera + Gallery) -->
+                <div class="attachment-popup-menu" id="attachmentMenu" style="display: none;">
+                  <button type="button" class="attachment-menu-item" id="btnMenuCamera">
+                    <div class="menu-item-icon icon-camera">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                      </svg>
+                    </div>
+                    <div class="menu-item-text">
+                      <div class="menu-item-title">ক্যামেরা (Camera)</div>
+                      <div class="menu-item-sub">খাতা বা বইয়ের ছবি তুলুন</div>
+                    </div>
+                  </button>
+                  <button type="button" class="attachment-menu-item" id="btnMenuGallery">
+                    <div class="menu-item-icon icon-gallery">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                    </div>
+                    <div class="menu-item-text">
+                      <div class="menu-item-title">গ্যালারি (Gallery)</div>
+                      <div class="menu-item-sub">ডিভাইস থেকে ছবি বা ফাইল</div>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Hidden inputs for Camera direct capture and Gallery upload -->
+                <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;">
+                <input type="file" id="mediaUploadInput" accept="image/*" style="display:none;">
+              </div>
+
+              <div class="right-action-group">
+                <button type="button" class="btn-mic" id="btnVoiceInput" aria-label="Voice Input">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                  </svg>
+                </button>
+                <button type="submit" class="btn-send-blue" id="btnSend" aria-label="Send Message">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="19" x2="12" y2="5"></line>
+                    <polyline points="5 12 12 5 19 12"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </form>
+          <div class="home-indicator"></div>
+        </footer>
+      </div>
+
+      <!-- ===================================================================
+           VIEW 2: STUDENT PROFILE VIEW (Exact Image 3)
+           =================================================================== -->
+      <div class="app-view" id="viewProfile">
+        <header class="subpage-nav">
+          <button class="subpage-back-btn" id="btnBackFromProfile" aria-label="Back to chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+          <div class="subpage-title-group">
+            <h2 class="subpage-title">Student Profile</h2>
+            <p class="subpage-subtitle">A learning experience that fits you</p>
+          </div>
+          <button class="subpage-help-btn" id="btnProfileHelp" aria-label="Help">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+        </header>
+
+        <div class="subpage-scroll-content">
+          <!-- Profile Summary Card -->
+          <div class="profile-hero-card">
+            <div class="profile-avatar-circle" id="profileAvatarHero">
+              <span class="avatar-text" id="avatarHeroInitials">RA</span>
+              <img id="avatarHeroImg" src="" alt="Profile Image" style="display:none;">
+            </div>
+            
+            <div class="profile-hero-info">
+              <h3 class="profile-hero-name" id="heroStudentName">Ratim Ahmed</h3>
+              <p class="profile-hero-status" id="heroStudentClass">Class 10 (SSC) • Ready to learn</p>
+              <label class="btn-upload-link" for="profilePhotoInput">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <span>Upload photo</span>
+              </label>
+              <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
+            </div>
+
+            <!-- Avatar preset selection -->
+            <div class="avatar-choose-row">
+              <span class="choose-avatar-label">Or choose an avatar</span>
+              <div class="avatar-chip-buttons">
+                <button type="button" class="avatar-icon-chip active" data-avatar="grad" title="Graduate">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                  </svg>
+                </button>
+                <button type="button" class="avatar-icon-chip" data-avatar="robot" title="Robot">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                    <circle cx="12" cy="5" r="2"></circle>
+                    <path d="M12 7v4"></path>
+                    <line x1="8" y1="16" x2="8" y2="16"></line>
+                    <line x1="16" y1="16" x2="16" y2="16"></line>
+                  </svg>
+                </button>
+                <button type="button" class="avatar-icon-chip" data-avatar="rocket" title="Rocket">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
+                    <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: About You -->
+          <div class="form-section-header">ABOUT YOU</div>
+          <div class="section-card">
+            <div class="form-field-group">
+              <label for="inputProfileName">Full name / নাম</label>
+              <input type="text" id="inputProfileName" class="modern-input" value="Ratim Ahmed">
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-field-group">
+                <label for="inputProfileAge">Age / বয়স</label>
+                <input type="number" id="inputProfileAge" class="modern-input" value="16" min="6" max="99">
+              </div>
+              <div class="form-field-group">
+                <label for="selectProfileGender">Gender / লিঙ্গ</label>
+                <div class="select-wrapper">
+                  <select id="selectProfileGender" class="modern-select">
+                    <option value="Male" selected>Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Your Studies -->
+          <div class="form-section-header">YOUR STUDIES</div>
+          <div class="section-card">
+            <div class="form-field-group">
+              <label for="selectProfileClass">Class / শ্রেণি</label>
+              <div class="select-wrapper">
+                <select id="selectProfileClass" class="modern-select">
+                  <option value="Class 6">Class 6</option>
+                  <option value="Class 7">Class 7</option>
+                  <option value="Class 8">Class 8</option>
+                  <option value="Class 9">Class 9</option>
+                  <option value="Class 10 (SSC)" selected>Class 10 (SSC)</option>
+                  <option value="Class 11 (HSC)">Class 11 (HSC)</option>
+                  <option value="Class 12 (HSC)">Class 12 (HSC)</option>
+                  <option value="University">University</option>
+                </select>
+              </div>
+              <span class="field-hint">Explanations and examples match your class level.</span>
+            </div>
+
+            <div class="subject-row-group">
+              <div class="subject-header-row">
+                <span>Main subject / মূল বিষয়</span>
+                <button type="button" class="btn-text-blue" id="btnEditSubjects">Edit</button>
+              </div>
+              <div class="subject-badge-list" id="subjectBadgeList">
+                <span class="subject-badge">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L4.1 19.3a1 1 0 0 0 .84 1.7h14.12a1 1 0 0 0 .84-1.7L14 9.31V2"/></svg>
+                  <span>Science</span>
+                </span>
+                <span class="subject-badge">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+                  <span>Mathematics</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy Note -->
+          <div class="privacy-note-card">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+            <span>Your profile helps Dipu AI explain things at your level. It isn't visible to other students.</span>
+          </div>
+
+          <!-- Action Button -->
+          <div class="subpage-action-block">
+            <button class="btn-primary-blue-wide" id="btnSaveProfile">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Save changes</span>
+            </button>
+            <p class="bottom-footnote">Language and learning style? Find them in <a href="#" id="linkOpenSettingsFromProfile">AI Settings</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           VIEW 3: AI SETTINGS VIEW (Exact Image 4 & 5)
+           =================================================================== -->
+      <div class="app-view" id="viewSettings">
+        <header class="subpage-nav">
+          <button class="subpage-back-btn" id="btnBackFromSettings" aria-label="Back to chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+          <div class="subpage-title-group">
+            <h2 class="subpage-title">AI Settings</h2>
+            <p class="subpage-subtitle">Make Dipu AI work your way</p>
+          </div>
+          <button class="subpage-help-btn" id="btnSettingsHelp" aria-label="Help">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+        </header>
+
+        <div class="subpage-scroll-content">
+          <!-- LEARNING PREFERENCES -->
+          <div class="form-section-header">LEARNING PREFERENCES</div>
+          <div class="section-card settings-menu-card">
+            <div class="setting-row-item" id="rowResponseLanguage">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Response language</span>
+                  <span class="setting-sub-label">বাংলা + English</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <span class="setting-value-badge" id="valResponseLanguage">Bilingual</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="setting-row-item" id="rowExplanationStyle">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Explanation style</span>
+                  <span class="setting-sub-label">Understand the why, not just the answer</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <span class="setting-value-badge" id="valExplanationStyle">Step-by-step</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="setting-row-item">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Everyday examples</span>
+                  <span class="setting-sub-label">Connect new ideas to real life</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleEverydayExamples" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- YOUR EXPERIENCE -->
+          <div class="form-section-header">YOUR EXPERIENCE</div>
+          <div class="section-card">
+            <!-- Appearance Segments -->
+            <div class="appearance-row">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </div>
+                <span class="setting-main-label">Appearance</span>
+              </div>
+            </div>
+
+            <div class="theme-segment-control">
+              <button type="button" class="segment-btn active" data-theme-val="light">
+                <span>☀️ Light</span>
+              </button>
+              <button type="button" class="segment-btn" data-theme-val="dark">
+                <span>🌙 Dark</span>
+              </button>
+              <button type="button" class="segment-btn" data-theme-val="system">
+                <span>📱 System</span>
+              </button>
+            </div>
+
+            <div class="setting-row-item" style="border-top: 1px solid #f1f5f9; margin-top: 14px; padding-top: 14px;">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Study reminders</span>
+                  <span class="setting-sub-label">A gentle nudge at 7:00 PM</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleStudyReminders" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRIVACY & DATA -->
+          <div class="form-section-header">PRIVACY & DATA</div>
+          <div class="section-card settings-menu-card">
+            <div class="setting-row-item">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Save chat history</span>
+                  <span class="setting-sub-label">Pick up where you left off</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleSaveHistory" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row-item">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Help improve AI</span>
+                  <span class="setting-sub-label">Allow chats to be used for improvement</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleImproveAI">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row-item" id="rowManageData">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Manage my data</span>
+                  <span class="setting-sub-label">Export or delete your conversations</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy Link Notice -->
+          <div class="privacy-small-notice">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Your learning, your control. Read our privacy policy.</span>
+          </div>
+
+          <!-- ACCOUNT -->
+          <div class="form-section-header">ACCOUNT</div>
+          <div class="section-card settings-menu-card">
+            <div class="setting-row-item" id="rowSettingsToProfile">
+              <div class="setting-item-left">
+                <div class="setting-icon-blue">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label">Student Profile</span>
+                  <span class="setting-sub-label" id="settingsProfileSummary">Ratim Ahmed • Class 10 (SSC)</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="setting-row-item" id="rowSignOut">
+              <div class="setting-item-left">
+                <div class="setting-icon-red">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </div>
+                <div class="setting-text-col">
+                  <span class="setting-main-label text-red">Sign out</span>
+                </div>
+              </div>
+              <div class="setting-item-right">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-footer-info">
+            <p>Preferences are saved automatically</p>
+            <p>Dipu Academy AI • Version 1.0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           DRAWER SIDEBAR (Exact Image 2)
+           =================================================================== -->
+      <div class="drawer-backdrop" id="drawerBackdrop"></div>
+      <aside class="gemini-drawer" id="geminiDrawer">
+        <!-- Drawer Top Header -->
+        <div class="drawer-header">
+          <div class="drawer-brand-left">
+            <div class="drawer-sparkle-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff">
+                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+              </svg>
+            </div>
+            <div class="drawer-title-col">
+              <div class="drawer-brand-name">Dipu Academy AI</div>
+              <div class="drawer-brand-motto">A little help. A lot of possibility.</div>
+            </div>
+          </div>
+          <button class="drawer-close-btn" id="btnCloseDrawer" aria-label="Close menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Start a new chat Button -->
+        <div class="drawer-new-chat-box">
+          <button class="btn-royal-new-chat" id="btnDrawerNewChat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Start a new chat</span>
+          </button>
+        </div>
+
+        <!-- Search Your Chats -->
+        <div class="drawer-search-box">
+          <div class="search-input-pill">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="inputSearchChats" placeholder="Search your chats" autocomplete="off">
+          </div>
+        </div>
+
+        <!-- Grouped History List -->
+        <div class="drawer-history-scroll" id="drawerHistoryScroll">
+          <!-- Populated dynamically: Today, Yesterday, This Week -->
+        </div>
+
+        <!-- Drawer Bottom Action Cards -->
+        <div class="drawer-bottom-menu">
+          <!-- AI Settings Link -->
+          <button class="drawer-card-nav" id="btnDrawerOpenSettings">
+            <div class="card-nav-left">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>AI Settings</span>
+            </div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+
+          <!-- Profile Nav -->
+          <button class="drawer-card-nav" id="btnDrawerOpenProfile">
+            <div class="card-nav-left">
+              <div class="drawer-user-circle" id="drawerAvatarMini">RA</div>
+              <div class="drawer-user-info">
+                <span class="drawer-user-name" id="drawerUserName">Ratim Ahmed</span>
+                <span class="drawer-user-sub" id="drawerUserSub">Class 10 (SSC) • Edit profile</span>
+              </div>
+            </div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Gemini Style Textbook Verification Modal -->
+  <div class="textbook-modal-backdrop" id="textbookModal" style="display: none;">
+    <div class="textbook-modal-card">
+      <div class="textbook-modal-header">
+        <div class="textbook-header-left">
+          <div class="textbook-badge-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="textbook-modal-title">NCTB Textbook Verification</h3>
+            <p class="textbook-modal-sub">National Curriculum & Textbook Board Standard</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseTextbookModal">✕</button>
+      </div>
+
+      <div class="textbook-modal-body" id="textbookModalBody">
+        <div class="textbook-check-item">
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>Curriculum Aligned:</strong>
+            <p>Class 10 (SSC) Science & Mathematics syllabus approved by NCTB Bangladesh.</p>
+          </div>
+        </div>
+        <div class="textbook-check-item">
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>Standard Formula & Units:</strong>
+            <p>Formulas, definitions, and SI units strictly adhere to official textbook standards.</p>
+          </div>
+        </div>
+        <div class="textbook-check-item">
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>Exam Advisory:</strong>
+            <p>Always practice handwriting formulas and solving previous board questions for CQ and MCQ.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="textbook-modal-footer">
+        <button class="btn-textbook-done" id="btnDoneTextbookModal">Got it, thanks!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-App Camera Viewfinder Modal -->
+  <div class="camera-modal" id="cameraModal" style="display: none;">
+    <div class="camera-modal-content">
+      <!-- Camera Header Bar -->
+      <div class="camera-header">
+        <button type="button" class="camera-btn-icon" id="btnCloseCamera" aria-label="Close Camera">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="camera-title-badge">ক্যামেরা মোড • Dipu AI</div>
+        <button type="button" class="camera-btn-icon" id="btnSwitchCamera" aria-label="Switch Camera">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Video Viewfinder and Snapshot Canvas -->
+      <div class="camera-viewfinder-wrap">
+        <video id="cameraVideo" autoplay playsinline muted></video>
+        <img id="cameraSnapshotPreview" alt="Snapshot preview" style="display: none;">
+        <canvas id="cameraCanvas" style="display: none;"></canvas>
+        <div class="camera-focus-reticle" id="cameraFocusReticle"></div>
+
+        <!-- Permission Notice Overlay -->
+        <div class="camera-permission-notice" id="cameraPermNotice" style="display: none;">
+          <div class="perm-icon">📷</div>
+          <div class="perm-title">ক্যামেরা পারমিশন প্রয়োজন</div>
+          <div class="perm-desc">অঙ্কের বা বইয়ের ছবি তুলতে ব্রাউজার থেকে ক্যামেরা পারমিশন 'Allow' করুন।</div>
+          <button type="button" class="btn-perm-retry" id="btnPermRetry">আবার চেষ্টা করুন</button>
+          <button type="button" class="btn-perm-native" id="btnPermNative">গ্যালারি বা ফাইল থেকে নিন</button>
+        </div>
+      </div>
+
+      <!-- Camera Controls Footer -->
+      <div class="camera-footer">
+        <!-- Live View Controls -->
+        <div class="camera-live-controls" id="cameraLiveControls">
+          <div class="camera-footer-spacer"></div>
+          <button type="button" class="btn-shutter" id="btnShutterCapture" aria-label="Take Photo">
+            <div class="shutter-inner"></div>
+          </button>
+          <button type="button" class="camera-sub-btn" id="btnCameraGalleryFallback" title="Choose from gallery">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Captured Photo Review Controls -->
+        <div class="camera-review-controls" id="cameraReviewControls" style="display: none;">
+          <button type="button" class="btn-camera-retake" id="btnCameraRetake">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38l-5.67-5.67"/></svg>
+            <span>আবার তুলুন</span>
+          </button>
+          <button type="button" class="btn-camera-use" id="btnCameraUsePhoto">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>ছবিটি ব্যবহার করুন</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gemini Style Toast Notification -->
+  <div class="gemini-toast" id="geminiToast" style="display: none;">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="geminiToastText">Copied to clipboard</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
