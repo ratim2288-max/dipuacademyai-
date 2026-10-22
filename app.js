@@ -1366,8 +1366,14 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
     // 1. Try local server endpoint first (Fastest, zero-CORS, secure)
     try {
       let serverEndpoint = '/api/chat';
-      if (!window.location.origin || window.location.origin === 'null' || window.location.protocol === 'file:' || window.location.port !== '3000') {
+      if (window.location.hostname.includes('vercel.app') || window.location.protocol === 'https:') {
+        serverEndpoint = '/api/chat';
+      } else if (!window.location.origin || window.location.origin === 'null' || window.location.protocol === 'file:') {
         serverEndpoint = 'http://localhost:3000/api/chat';
+      } else if (window.location.port && window.location.port !== '3000') {
+        serverEndpoint = 'http://localhost:3000/api/chat';
+      } else {
+        serverEndpoint = '/api/chat';
       }
 
       const serverRes = await fetch(serverEndpoint, {
