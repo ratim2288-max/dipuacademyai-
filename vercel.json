@@ -1,9 +1,4 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/api/chat",
-      "destination": "/api/chat.js"
-    }
-  ]
+  "framework": null,
+  "outputDirectory": "."
 }
