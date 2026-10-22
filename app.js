@@ -84,6 +84,7 @@
   const attachmentPreviewImg = document.getElementById('attachmentPreviewImg');
   const attachmentPreviewName = document.getElementById('attachmentPreviewName');
   const btnRemovePreview = document.getElementById('btnRemovePreview');
+  const btnSend = document.getElementById('btnSend');
 
   // Queued Messages DOM Elements (Antigravity Style)
   const queuedMessagesContainer = document.getElementById('queuedMessagesContainer');
@@ -169,7 +170,157 @@
     }
   }
   setInterval(updateClock, 30000);
-  updateClock();
+  // Toast Notification Helper
+  function showToast(text) {
+    const toast = document.getElementById('geminiToast');
+    const toastText = document.getElementById('geminiToastText');
+    if (!toast || !toastText) return;
+    toastText.textContent = text;
+    toast.style.display = 'flex';
+    clearTimeout(window._geminiToastTimer);
+    window._geminiToastTimer = setTimeout(() => {
+      toast.style.display = 'none';
+    }, 2000);
+  }
+
+  // Image Attachment Helpers
+  function attachImageFile(dataUrl, filename) {
+    state.pendingAttachment = { dataUrl, name: filename };
+    if (attachmentPreviewImg) attachmentPreviewImg.src = dataUrl;
+    if (attachmentPreviewName) attachmentPreviewName.textContent = filename || 'image.jpg';
+    if (chatAttachmentPreview) chatAttachmentPreview.style.display = 'flex';
+  }
+
+  function clearAttachment() {
+    state.pendingAttachment = null;
+    if (chatAttachmentPreview) chatAttachmentPreview.style.display = 'none';
+    if (mediaUploadInput) mediaUploadInput.value = '';
+    if (cameraDirectInput) cameraDirectInput.value = '';
+  }
+
+  // Camera & Media Handlers
+  let currentCameraStream = null;
+  let currentFacingMode = 'environment';
+  let capturedImageDataUrl = null;
+
+  function toggleAttachmentMenu(show) {
+    if (!attachmentMenu) return;
+    const isVisible = attachmentMenu.style.display === 'flex';
+    const next = (typeof show === 'boolean') ? show : !isVisible;
+    attachmentMenu.style.display = next ? 'flex' : 'none';
+  }
+
+  function closeAttachmentMenu() {
+    if (attachmentMenu) attachmentMenu.style.display = 'none';
+  }
+
+  function handleFileSelected(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('অনুগ্রহ করে একটি ছবি নির্বাচন করুন');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      attachImageFile(e.target.result, file.name);
+      showToast('ছবি সংযুক্ত হয়েছে ✓');
+      if (chatInput) chatInput.focus();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function openInAppCamera() {
+    if (!cameraModal) return;
+
+    if (cameraPermNotice) cameraPermNotice.style.display = 'none';
+    if (cameraSnapshotPreview) cameraSnapshotPreview.style.display = 'none';
+    if (cameraVideo) cameraVideo.style.display = 'block';
+    if (cameraLiveControls) cameraLiveControls.style.display = 'flex';
+    if (cameraReviewControls) cameraReviewControls.style.display = 'none';
+    cameraModal.style.display = 'flex';
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.warn('getUserMedia not supported, opening native fallback');
+      if (cameraPermNotice) cameraPermNotice.style.display = 'flex';
+      return;
+    }
+
+    if (currentCameraStream) {
+      currentCameraStream.getTracks().forEach(t => t.stop());
+      currentCameraStream = null;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: currentFacingMode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      });
+
+      currentCameraStream = stream;
+      if (cameraVideo) {
+        cameraVideo.srcObject = stream;
+        await cameraVideo.play().catch(e => console.log('Camera video play caught:', e));
+      }
+    } catch (err) {
+      console.warn('Camera permission denied or error:', err);
+      if (cameraPermNotice) cameraPermNotice.style.display = 'flex';
+    }
+  }
+
+  function stopCameraStream() {
+    if (currentCameraStream) {
+      currentCameraStream.getTracks().forEach(t => t.stop());
+      currentCameraStream = null;
+    }
+    if (cameraModal) cameraModal.style.display = 'none';
+    if (cameraSnapshotPreview) cameraSnapshotPreview.style.display = 'none';
+    if (cameraVideo) cameraVideo.style.display = 'block';
+  }
+
+  function captureSnapshot() {
+    if (!cameraVideo || !cameraCanvas) return;
+    const w = cameraVideo.videoWidth || 640;
+    const h = cameraVideo.videoHeight || 480;
+    cameraCanvas.width = w;
+    cameraCanvas.height = h;
+    const ctx = cameraCanvas.getContext('2d');
+    ctx.drawImage(cameraVideo, 0, 0, w, h);
+    capturedImageDataUrl = cameraCanvas.toDataURL('image/jpeg', 0.85);
+
+    if (cameraSnapshotPreview) {
+      cameraSnapshotPreview.src = capturedImageDataUrl;
+      cameraSnapshotPreview.style.display = 'block';
+    }
+    if (cameraVideo) cameraVideo.style.display = 'none';
+    if (cameraLiveControls) cameraLiveControls.style.display = 'none';
+    if (cameraReviewControls) cameraReviewControls.style.display = 'flex';
+  }
+
+  function retakePhoto() {
+    if (cameraSnapshotPreview) cameraSnapshotPreview.style.display = 'none';
+    if (cameraVideo) cameraVideo.style.display = 'block';
+    if (cameraLiveControls) cameraLiveControls.style.display = 'flex';
+    if (cameraReviewControls) cameraReviewControls.style.display = 'none';
+    capturedImageDataUrl = null;
+  }
+
+  function usePhoto() {
+    if (capturedImageDataUrl) {
+      attachImageFile(capturedImageDataUrl, `math_problem_${Date.now().toString().slice(-4)}.jpg`);
+      showToast('ছবি সংযুক্ত হয়েছে ✓');
+    }
+    stopCameraStream();
+    if (chatInput) chatInput.focus();
+  }
+
+  async function switchCamera() {
+    currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+    await openInAppCamera();
+  }
 
   // Initialize App
   function initApp() {
@@ -964,16 +1115,19 @@
   }
 
   // Send Message Logic with Antigravity Queued Messages
-  chatForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const query = chatInput.value.trim();
+  function submitUserMessage(e) {
+    if (e) {
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    }
+    const query = chatInput ? chatInput.value.trim() : '';
     if (!query && !state.pendingAttachment) return;
 
     const attachedImg = state.pendingAttachment ? state.pendingAttachment.dataUrl : null;
     const nowTime = getFormattedTime();
 
     // Clear input & pending attachment immediately so user can keep typing freely
-    chatInput.value = '';
+    if (chatInput) chatInput.value = '';
     clearAttachment();
 
     const current = getCurrentSession();
@@ -1023,7 +1177,7 @@
 
     // Otherwise, start AI response immediately
     processAIQuery(userMsg.text, userRow);
-  });
+  }
 
   // AI Response Processor with Gemini Flash & Educational Structure
   async function processAIQuery(query, userRow) {
@@ -1097,9 +1251,10 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
 
     // 1. Try local server endpoint first (Fastest, zero-CORS, secure)
     try {
-      const serverEndpoint = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
-        ? '/api/chat'
-        : 'http://localhost:3000/api/chat';
+      let serverEndpoint = '/api/chat';
+      if (!window.location.origin || window.location.origin === 'null' || window.location.protocol === 'file:' || window.location.port !== '3000') {
+        serverEndpoint = 'http://localhost:3000/api/chat';
+      }
 
       const serverRes = await fetch(serverEndpoint, {
         method: 'POST',
@@ -1484,25 +1639,23 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
     // Mic & Voice input
     btnVoiceInput.addEventListener('click', startVoiceInput);
 
-    // =========================================================================
-    // CAMERA & ATTACHMENT MENU LOGIC
-    // =========================================================================
-    let currentCameraStream = null;
-    let currentFacingMode = 'environment';
-    let capturedImageDataUrl = null;
-
-    function toggleAttachmentMenu(show) {
-      if (!attachmentMenu) return;
-      const isVisible = attachmentMenu.style.display === 'flex';
-      const next = (typeof show === 'boolean') ? show : !isVisible;
-      attachmentMenu.style.display = next ? 'flex' : 'none';
+    // Send message triggers (Form submit, Blue Send button, and Enter key)
+    if (chatForm) {
+      chatForm.addEventListener('submit', submitUserMessage);
+    }
+    if (btnSend) {
+      btnSend.addEventListener('click', submitUserMessage);
+    }
+    if (chatInput) {
+      chatInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          submitUserMessage(e);
+        }
+      });
     }
 
-    function closeAttachmentMenu() {
-      if (attachmentMenu) attachmentMenu.style.display = 'none';
-    }
-
-    // Toggle menu when clicking paperclip button
+    // Attachment menu toggle
     if (btnAttachFile) {
       btnAttachFile.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1510,7 +1663,7 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
       });
     }
 
-    // Close menu when clicking anywhere else
+    // Close menu when clicking outside
     document.addEventListener('click', (e) => {
       if (attachmentMenu && attachmentMenu.style.display === 'flex') {
         if (!attachmentMenu.contains(e.target) && !btnAttachFile.contains(e.target)) {
@@ -1519,7 +1672,6 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
       }
     });
 
-    // 1. Camera Menu Item Click
     if (btnMenuCamera) {
       btnMenuCamera.addEventListener('click', () => {
         closeAttachmentMenu();
@@ -1527,28 +1679,11 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
       });
     }
 
-    // 2. Gallery Menu Item Click
     if (btnMenuGallery) {
       btnMenuGallery.addEventListener('click', () => {
         closeAttachmentMenu();
         if (mediaUploadInput) mediaUploadInput.click();
       });
-    }
-
-    // 3. Handle File Input Change (Gallery & Native Camera Fallback)
-    function handleFileSelected(file) {
-      if (!file) return;
-      if (!file.type.startsWith('image/')) {
-        showToast('অনুগ্রহ করে একটি ছবি নির্বাচন করুন');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        attachImageFile(e.target.result, file.name);
-        showToast('ছবি সংযুক্ত হয়েছে ✓');
-        chatInput.focus();
-      };
-      reader.readAsDataURL(file);
     }
 
     if (mediaUploadInput) {
@@ -1563,122 +1698,11 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
       });
     }
 
-    // 4. Attach & Clear Image Preview
-    function attachImageFile(dataUrl, filename) {
-      state.pendingAttachment = { dataUrl, name: filename };
-      if (attachmentPreviewImg) attachmentPreviewImg.src = dataUrl;
-      if (attachmentPreviewName) attachmentPreviewName.textContent = filename || 'image.jpg';
-      if (chatAttachmentPreview) chatAttachmentPreview.style.display = 'flex';
-    }
-
-    function clearAttachment() {
-      state.pendingAttachment = null;
-      if (chatAttachmentPreview) chatAttachmentPreview.style.display = 'none';
-      if (mediaUploadInput) mediaUploadInput.value = '';
-      if (cameraDirectInput) cameraDirectInput.value = '';
-    }
-
     if (btnRemovePreview) {
       btnRemovePreview.addEventListener('click', (e) => {
         e.preventDefault();
         clearAttachment();
       });
-    }
-
-    // 5. In-App Live Camera Flow
-    async function openInAppCamera() {
-      if (!cameraModal) return;
-
-      if (cameraPermNotice) cameraPermNotice.style.display = 'none';
-      if (cameraSnapshotPreview) cameraSnapshotPreview.style.display = 'none';
-      if (cameraVideo) cameraVideo.style.display = 'block';
-      if (cameraLiveControls) cameraLiveControls.style.display = 'flex';
-      if (cameraReviewControls) cameraReviewControls.style.display = 'none';
-      cameraModal.style.display = 'flex';
-
-      // Check browser support
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.warn('getUserMedia not supported, opening native fallback');
-        if (cameraPermNotice) cameraPermNotice.style.display = 'flex';
-        return;
-      }
-
-      // Stop any existing stream
-      if (currentCameraStream) {
-        currentCameraStream.getTracks().forEach(t => t.stop());
-        currentCameraStream = null;
-      }
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: currentFacingMode },
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          },
-          audio: false
-        });
-
-        currentCameraStream = stream;
-        if (cameraVideo) {
-          cameraVideo.srcObject = stream;
-          await cameraVideo.play().catch(e => console.log('Camera video play caught:', e));
-        }
-      } catch (err) {
-        console.warn('Camera permission denied or error:', err);
-        if (cameraPermNotice) cameraPermNotice.style.display = 'flex';
-      }
-    }
-
-    function stopCameraStream() {
-      if (currentCameraStream) {
-        currentCameraStream.getTracks().forEach(t => t.stop());
-        currentCameraStream = null;
-      }
-      if (cameraModal) cameraModal.style.display = 'none';
-      if (cameraSnapshotPreview) cameraSnapshotPreview.style.display = 'none';
-      if (cameraVideo) cameraVideo.style.display = 'block';
-    }
-
-    function captureSnapshot() {
-      if (!cameraVideo || !cameraCanvas) return;
-      const w = cameraVideo.videoWidth || 640;
-      const h = cameraVideo.videoHeight || 480;
-      cameraCanvas.width = w;
-      cameraCanvas.height = h;
-      const ctx = cameraCanvas.getContext('2d');
-      ctx.drawImage(cameraVideo, 0, 0, w, h);
-      capturedImageDataUrl = cameraCanvas.toDataURL('image/jpeg', 0.85);
-
-      if (cameraSnapshotPreview) {
-        cameraSnapshotPreview.src = capturedImageDataUrl;
-        cameraSnapshotPreview.style.display = 'block';
-      }
-      if (cameraVideo) cameraVideo.style.display = 'none';
-      if (cameraLiveControls) cameraLiveControls.style.display = 'none';
-      if (cameraReviewControls) cameraReviewControls.style.display = 'flex';
-    }
-
-    function retakePhoto() {
-      if (cameraSnapshotPreview) cameraSnapshotPreview.style.display = 'none';
-      if (cameraVideo) cameraVideo.style.display = 'block';
-      if (cameraLiveControls) cameraLiveControls.style.display = 'flex';
-      if (cameraReviewControls) cameraReviewControls.style.display = 'none';
-      capturedImageDataUrl = null;
-    }
-
-    function usePhoto() {
-      if (capturedImageDataUrl) {
-        attachImageFile(capturedImageDataUrl, `math_problem_${Date.now().toString().slice(-4)}.jpg`);
-        showToast('ছবি সংযুক্ত হয়েছে ✓');
-      }
-      stopCameraStream();
-      chatInput.focus();
-    }
-
-    async function switchCamera() {
-      currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
-      await openInAppCamera();
     }
 
     // Camera Modal Action Listeners
@@ -1704,19 +1728,6 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
         stopCameraStream();
         if (cameraDirectInput) cameraDirectInput.click();
       });
-    }
-
-    // Toast Notification Helper
-    function showToast(text) {
-      const toast = document.getElementById('geminiToast');
-      const toastText = document.getElementById('geminiToastText');
-      if (!toast || !toastText) return;
-      toastText.textContent = text;
-      toast.style.display = 'flex';
-      clearTimeout(window._geminiToastTimer);
-      window._geminiToastTimer = setTimeout(() => {
-        toast.style.display = 'none';
-      }, 2000);
     }
 
     // Chat Area Clean Action Bar (Listen, Copy, Like)
