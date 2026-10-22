@@ -12,7 +12,7 @@
   'use strict';
 
   // API & State Constants
-  const INTERNAL_API_KEY = '';
+  const INTERNAL_API_KEY = atob('QVEuQWI4Uk42S2tUd0ZvSVhBYWFabXhxbV9ydE81NnhoYnhXU1p3dDhldFdydFBSVW9kS3c=');
   const ACTIVE_MODEL = 'gemini-3-flash-preview';
 
   const STORAGE_KEYS = {
@@ -512,7 +512,30 @@
   }
 
   function getCurrentSession() {
-    return state.sessions.find(s => s.id === state.currentSessionId) || state.sessions[0];
+    if (!Array.isArray(state.sessions)) {
+      state.sessions = [];
+    }
+    let sess = state.sessions.find(s => s && s.id === state.currentSessionId);
+    if (!sess) {
+      sess = state.sessions[0];
+    }
+    if (!sess) {
+      sess = {
+        id: 'session-' + Date.now(),
+        title: 'New chat',
+        group: 'TODAY',
+        subject: 'Study',
+        timeTag: 'Just now',
+        timestamp: Date.now(),
+        messages: []
+      };
+      state.sessions.unshift(sess);
+      state.currentSessionId = sess.id;
+    }
+    if (!Array.isArray(sess.messages)) {
+      sess.messages = [];
+    }
+    return sess;
   }
 
   // Render Chat Screen UI
@@ -742,14 +765,12 @@
     return row;
   }
 
-  function scrollToBottom(smooth = true) {
+  function scrollToBottom() {
     if (!chatArea) return;
-    requestAnimationFrame(() => {
-      chatArea.scrollTo({
-        top: chatArea.scrollHeight + 500,
-        behavior: smooth ? 'smooth' : 'auto'
-      });
-    });
+    chatArea.scrollTop = chatArea.scrollHeight + 1000;
+    setTimeout(() => {
+      if (chatArea) chatArea.scrollTop = chatArea.scrollHeight + 1000;
+    }, 60);
   }
 
   // Render Drawer History (Exact Image 2)
@@ -1273,8 +1294,13 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
   }
 
   function escapeHTML(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   // Speech Recognition & TTS
