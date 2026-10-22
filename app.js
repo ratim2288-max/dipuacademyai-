@@ -507,15 +507,25 @@
     }
 
     if (!state.sessions || state.sessions.length === 0) {
-      state.sessions = createDesignDefaultSessions();
-      saveSessions();
-    }
-
-    const savedActive = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION_ID);
-    if (savedActive && state.sessions.some(s => s.id === savedActive)) {
-      state.currentSessionId = savedActive;
+      state.sessions = [];
+      const newDraft = {
+        id: 'session-' + Date.now(),
+        title: 'New chat',
+        group: 'TODAY',
+        subject: 'Study',
+        timeTag: 'Just now',
+        timestamp: Date.now(),
+        messages: []
+      };
+      state.sessions.push(newDraft);
+      state.currentSessionId = newDraft.id;
     } else {
-      state.currentSessionId = state.sessions[0].id;
+      const savedActive = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION_ID);
+      if (savedActive && state.sessions.some(s => s.id === savedActive)) {
+        state.currentSessionId = savedActive;
+      } else {
+        state.currentSessionId = state.sessions[0].id;
+      }
     }
 
     renderChatUI();
@@ -1214,8 +1224,77 @@
     processAIQuery(userMsg.text, userRow);
   }
 
+  // Helper to detect conversational greetings so AI does not think unnecessarily
+  function isSimpleGreeting(rawText) {
+    if (!rawText) return false;
+    const q = rawText.toLowerCase().trim().replace(/[?!.,।]/g, '');
+    const simpleTokens = [
+      'hello', 'hi', 'hey', 'হ্যালো', 'হাই', 'হে',
+      'সালাম', 'আসসালামু আলাইকুম', 'assalam', 'assalamu alaikum', 'assalamualaikum', 'salam',
+      'কেমন আছো', 'কেমন আছেন', 'kemon acho', 'kemon aso', 'kemon achen',
+      'hi dipu', 'hello dipu', 'dipu', 'দিপু',
+      'good morning', 'good evening', 'good afternoon', 'শুভ সকাল', 'শুভ রাত্রি',
+      'ধন্যবাদ', 'thanks', 'thank you', 'ok', 'okay', 'ঠিক আছে'
+    ];
+    if (simpleTokens.includes(q)) return true;
+    return q.length <= 15 && simpleTokens.some(t => q === t || q.startsWith(t + ' ') || q.endsWith(' ' + t));
+  }
+
+  function getInstantGreetingResponse(rawText) {
+    const q = rawText.toLowerCase().trim();
+    const name = (state.profile && state.profile.name) ? state.profile.name : 'শিক্ষার্থী';
+    const sscClass = (state.profile && state.profile.class) ? state.profile.class : 'Class 10 (SSC)';
+
+    if (q.includes('সালাম') || q.includes('salam') || q.includes('assalam')) {
+      return {
+        headline: `ওয়ালাইকুম আসসালাম, ${name}! ✨`,
+        text: `ওয়ালাইকুম আসসালাম! আশা করি তোমার পড়াশোনা খুব ভালো চলছে। আমি তোমার পার্সোনাল স্টাডি মেন্টর Dipu AI। ${sscClass}-এর পদার্থবিজ্ঞান, রসায়ন, গণিত বা যেকোনো বিষয়ের প্রশ্ন করো—আমি ধাপে ধাপে বুঝিয়ে দেব!`
+      };
+    }
+    if (q.includes('কেমন') || q.includes('kemon')) {
+      return {
+        headline: `আমি চমৎকার আছি, ${name}! 😊`,
+        text: `আমি খুব ভালো আছি, ধন্যবাদ জিজ্ঞেস করার জন্য! তোমার SSC পরীক্ষার প্রস্তুতি কেমন চলছে? আজ পদার্থ, রসায়ন বা গণিতের কোন অধ্যায়ের অঙ্ক বা সূত্র প্র্যাকটিস করতে চাও? প্রশ্ন লিখে পাঠাও!`
+      };
+    }
+    if (q.includes('ধন্যবাদ') || q.includes('thank')) {
+      return {
+        headline: `স্বাগতম, ${name}! 🌟`,
+        text: `তোমাকে সবসময় সাহায্য করতে পেরে আমি আনন্দিত! আরও কোনো বিষয় বা অঙ্কে সমস্যা থাকলে দ্বিধাহীনভাবে বলো। মনোযোগ দিয়ে পড়ো, সাফল্য আসবেই!`
+      };
+    }
+    return {
+      headline: `হ্যালো, ${name}! 👋`,
+      text: `স্বাগতম! আমি তোমার ${sscClass} স্টাডি সঙ্গী Dipu AI। গণিত, বিজ্ঞান বা যেকোনো বিষয়ের জটিল অঙ্ক বা থিওরি বুঝতে চাও? প্রশ্নটি লিখো অথবা বই/খাতার ছবি তুলে পাঠাও—আমি এখনই সমাধান করে দিচ্ছি!`
+    };
+  }
+
   // AI Response Processor with Gemini Flash & Educational Structure
   async function processAIQuery(query, userRow) {
+    // 1. Simple greeting / conversational text: instant reply with ZERO thinking animation!
+    if (isSimpleGreeting(query)) {
+      const greetingData = getInstantGreetingResponse(query);
+      const aiMsg = {
+        id: 'msg-a-' + Date.now(),
+        sender: 'ai',
+        headline: greetingData.headline,
+        text: greetingData.text,
+        formula: '',
+        formulaLabel: '',
+        example: '',
+        textbook: 'Dipu Academy AI • Always ready to help',
+        time: getFormattedTime()
+      };
+      const current = getCurrentSession();
+      current.messages.push(aiMsg);
+      appendMessageDOM(aiMsg);
+      saveSessions();
+      renderDrawerHistory();
+      scrollToBottom(true);
+      return;
+    }
+
+    // 2. Academic / Difficult question (কঠিন প্রশ্ন): thinking bubble appears UP inside chatArea
     state.isThinking = true;
     showTyping(true);
     scrollToBottom(true);
@@ -1478,8 +1557,38 @@ Return ONLY a valid JSON object matching this schema (with NO markdown backticks
   }
 
   function showTyping(show) {
+    const existingThinking = document.getElementById('chatThinkingRow');
+    if (existingThinking) {
+      existingThinking.remove();
+    }
+
     if (typingIndicator) {
-      typingIndicator.style.display = show ? 'flex' : 'none';
+      typingIndicator.style.display = 'none';
+    }
+
+    if (show && chatArea) {
+      const row = document.createElement('div');
+      row.className = 'chat-row ai thinking-row';
+      row.id = 'chatThinkingRow';
+      row.innerHTML = `
+        <div class="ai-header-tag">
+          <div class="ai-sparkle-avatar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+            </svg>
+          </div>
+          <span>Dipu AI চিন্তা করছে...</span>
+        </div>
+        <div class="inline-thinking-bubble">
+          <div class="thinking-spinner-ring"></div>
+          <span class="thinking-status-text">সমাধান বিশ্লেষণ করছি...</span>
+          <div class="typing-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      `;
+      chatArea.appendChild(row);
+      scrollToBottom(true);
     }
   }
 

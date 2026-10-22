@@ -1416,15 +1416,62 @@ body.full-screen-mode .device-frame {
   transform: translateY(-1px);
 }
 
-/* Typing Indicator */
-.typing-indicator-bar {
-  display: flex;
+/* Inline Chat Thinking Bubble (Inside Chat Area Directly Below Message) */
+.chat-row.thinking-row {
+  margin-bottom: 16px;
+  animation: fadeInThinking 0.25s ease-out;
+}
+
+@keyframes fadeInThinking {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.inline-thinking-bubble {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 20px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #64748b;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 18px;
+  padding: 10px 18px;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+  margin-top: 4px;
+}
+
+[data-theme="dark"] .inline-thinking-bubble {
+  background: rgba(24, 24, 27, 0.9);
+  border-color: rgba(96, 165, 250, 0.22);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.thinking-spinner-ring {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(37, 99, 235, 0.2);
+  border-top-color: var(--primary-blue, #2563eb);
+  border-radius: 50%;
+  animation: spinThinking 0.75s linear infinite;
+}
+
+@keyframes spinThinking {
+  to { transform: rotate(360deg); }
+}
+
+.thinking-status-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-blue, #2563eb);
+}
+
+[data-theme="dark"] .thinking-status-text {
+  color: #60a5fa;
+}
+
+/* Legacy bottom bar permanently hidden */
+.typing-indicator-bar {
+  display: none !important;
 }
 
 .typing-dots span {
@@ -1432,7 +1479,7 @@ body.full-screen-mode .device-frame {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #64748b;
+  background: var(--primary-blue, #2563eb);
   margin: 0 1.5px;
   animation: wave 1.4s infinite ease-in-out both;
 }
